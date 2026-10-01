@@ -1,0 +1,12 @@
+{
+  "features": [
+    "mean_ppl",
+    "burstiness",
+    "top10_ratio",
+    "avg_sentence_len"
+  ],
+  "thresholds": {
+    "ai_ppl_cutoff": 28.0,
+    "ai_burstiness_cutoff": 0.25
+  }
+}

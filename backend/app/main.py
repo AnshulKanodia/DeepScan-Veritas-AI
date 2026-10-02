@@ -10,7 +10,12 @@ if str(ROOT_DIR) not in sys.path:
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.app.db.database import Base, engine
+from backend.app.db.models import ScanRecord
 from backend.app.api.endpoints import router as api_router
+
+# Initialize database schema (PostgreSQL or SQLite)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Veritas AI / DeepScan Forensic Detection API",

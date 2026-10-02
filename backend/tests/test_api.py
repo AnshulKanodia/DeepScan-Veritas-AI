@@ -58,3 +58,12 @@ def test_export_pdf():
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert len(response.content) > 1000
+
+def test_get_history():
+    response = client.get("/api/v1/history")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) > 0
+    assert "forensic_hash" in data[0]
+

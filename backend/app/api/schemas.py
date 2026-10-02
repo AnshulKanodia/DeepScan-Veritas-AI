@@ -1,5 +1,5 @@
 from typing import List, Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 class TextAnalysisRequest(BaseModel):
     text: str = Field(..., min_length=10, description="The prose text to analyze for AI provenance")
@@ -70,3 +70,15 @@ class ForensicReportRequest(BaseModel):
     ast_max_depth: Optional[int] = None
     identifier_entropy: Optional[float] = None
     forensic_hash: str
+
+class ScanHistoryItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    created_at: str
+    content_type: str
+    overall_ai_score: float
+    verdict: str
+    forensic_hash: str
+    content_preview: str
+

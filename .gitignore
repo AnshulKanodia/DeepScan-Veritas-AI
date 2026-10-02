@@ -26,6 +26,9 @@ wheels/
 .pytest_cache/
 .coverage
 htmlcov/
+*.db
+*.sqlite
+*.sqlite3
 
 # Node / React
 node_modules/

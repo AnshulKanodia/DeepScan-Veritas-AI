@@ -7,7 +7,6 @@ CURRENT_DIR = Path(__file__).resolve().parent
 if str(CURRENT_DIR) not in sys.path:
     sys.path.insert(0, str(CURRENT_DIR))
 
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router as api_router
@@ -51,5 +50,6 @@ def health_check():
 app.include_router(api_router)
 
 if __name__ == "__main__":
+    import uvicorn
     port = int(os.getenv("PORT", 7860))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

@@ -1,8 +1,8 @@
 import ast
 import math
 from typing import Dict, Any, List, Set
-from backend.app.ml.features import calculate_shannon_entropy, compute_sha256, score_to_color_and_verdict
-from backend.app.api.schemas import CodeAnalysisMetrics, CodeLineSpan, CodeAnalysisResponse
+from app.ml.features import calculate_shannon_entropy, compute_sha256, score_to_color_and_verdict
+from app.api.schemas import CodeAnalysisMetrics, CodeLineSpan, CodeAnalysisResponse
 
 class CodeAstAnalyzer:
     """

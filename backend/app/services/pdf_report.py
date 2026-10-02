@@ -4,7 +4,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from backend.app.api.schemas import ForensicReportRequest
+from app.api.schemas import ForensicReportRequest
 
 def generate_forensic_pdf(report_data: ForensicReportRequest) -> io.BytesIO:
     """

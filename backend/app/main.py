@@ -26,14 +26,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-try:
-    from backend.app.db.database import Base, engine
-    from backend.app.db.models import ScanRecord
-    from backend.app.api.endpoints import router as api_router
-except ImportError:
-    from app.db.database import Base, engine
-    from app.db.models import ScanRecord
-    from app.api.endpoints import router as api_router
+from app.db.database import Base, engine
+from app.db.models import ScanRecord
+from app.api.endpoints import router as api_router
 
 # Safely initialize database tables without crashing on serverless boot
 try:

@@ -3,16 +3,16 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from backend.app.api.schemas import (
+from app.api.schemas import (
     TextAnalysisRequest, TextAnalysisResponse,
     CodeAnalysisRequest, CodeAnalysisResponse,
     ForensicReportRequest, ScanHistoryItem
 )
-from backend.app.ml.text_analyzer import engine as text_engine
-from backend.app.ml.ast_analyzer import CodeAstAnalyzer
-from backend.app.services.pdf_report import generate_forensic_pdf
-from backend.app.db.database import get_db
-from backend.app.db.models import ScanRecord
+from app.ml.text_analyzer import engine as text_engine
+from app.ml.ast_analyzer import CodeAstAnalyzer
+from app.services.pdf_report import generate_forensic_pdf
+from app.db.database import get_db
+from app.db.models import ScanRecord
 
 router = APIRouter(prefix="/api/v1")
 

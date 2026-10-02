@@ -1,12 +1,12 @@
 import math
 from typing import List, Optional, Tuple
-from backend.app.ml.features import (
+from app.ml.features import (
     segment_sentences_with_spans,
     calculate_burstiness,
     score_to_color_and_verdict,
     compute_sha256
 )
-from backend.app.api.schemas import SentenceSpan, TextAnalysisMetrics, TextAnalysisResponse
+from app.api.schemas import SentenceSpan, TextAnalysisMetrics, TextAnalysisResponse
 
 class TextForensicEngine:
     """

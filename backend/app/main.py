@@ -10,6 +10,18 @@ for p in [str(CURRENT_DIR), str(BACKEND_DIR), str(PROJECT_ROOT)]:
     if p not in sys.path:
         sys.path.insert(0, p)
 
+# Alias 'app' as 'backend.app' so absolute imports work inside Vercel container
+import types
+if "backend" not in sys.modules:
+    try:
+        import app as _app_pkg
+        _backend_pkg = types.ModuleType("backend")
+        _backend_pkg.app = _app_pkg
+        sys.modules["backend"] = _backend_pkg
+        sys.modules["backend.app"] = _app_pkg
+    except ImportError:
+        pass
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

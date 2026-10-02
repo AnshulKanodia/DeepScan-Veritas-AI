@@ -22,6 +22,7 @@ export default function App() {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [engineStatus, setEngineStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [errorMsg, setErrorMsg] = useState(null);
+  const [editorType, setEditorType] = useState('monaco'); // 'monaco' | 'textarea'
   
   // Audit History state
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -304,21 +305,80 @@ export default function App() {
               <Terminal size={14} color="#06B6D4" />
               <span>Interactive Forensic Heatmap Canvas</span>
             </div>
-            <span className="section-hint">
-              Click any colored sentence or line to inspect token surprise
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', backgroundColor: '#0F172A', borderRadius: 6, border: '1px solid #1E293B', padding: 2 }}>
+                <button
+                  id="btn-view-monaco"
+                  onClick={() => setEditorType('monaco')}
+                  style={{
+                    padding: '3px 8px',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    borderRadius: 4,
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: editorType === 'monaco' ? '#06B6D4' : 'transparent',
+                    color: editorType === 'monaco' ? '#020617' : '#94A3B8'
+                  }}
+                >
+                  Monaco Heatmap
+                </button>
+                <button
+                  id="btn-view-textarea"
+                  onClick={() => setEditorType('textarea')}
+                  style={{
+                    padding: '3px 8px',
+                    fontSize: 10,
+                    fontWeight: 600,
+                    borderRadius: 4,
+                    border: 'none',
+                    cursor: 'pointer',
+                    backgroundColor: editorType === 'textarea' ? '#06B6D4' : 'transparent',
+                    color: editorType === 'textarea' ? '#020617' : '#94A3B8'
+                  }}
+                >
+                  Plain Textbox
+                </button>
+              </div>
+              <span className="section-hint">
+                Click any colored segment to inspect
+              </span>
+            </div>
           </div>
 
-          <div className="editor-wrapper" style={{ flex: analysisResult ? '0 0 58%' : '1' }}>
-            <MonacoHeatmap
-              value={content}
-              onChange={(val) => setContent(val || '')}
-              language={mode === 'text' ? 'markdown' : 'python'}
-              sentences={analysisResult?.sentences || []}
-              lines={analysisResult?.lines || []}
-              mode={mode}
-              onSelectSegment={(seg) => setSelectedSegment(seg)}
-            />
+          <div className="editor-wrapper" style={{ flex: analysisResult ? '0 0 58%' : '1', minHeight: '380px', display: 'flex', flexDirection: 'column' }}>
+            {editorType === 'monaco' ? (
+              <MonacoHeatmap
+                value={content}
+                onChange={(val) => setContent(val || '')}
+                language={mode === 'text' ? 'markdown' : 'python'}
+                sentences={analysisResult?.sentences || []}
+                lines={analysisResult?.lines || []}
+                mode={mode}
+                onSelectSegment={(seg) => setSelectedSegment(seg)}
+              />
+            ) : (
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Type or paste your text or source code here to analyze..."
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  minHeight: '380px',
+                  backgroundColor: '#0D1117',
+                  color: '#F1F5F9',
+                  border: '1px solid #1E293B',
+                  borderRadius: 12,
+                  padding: 16,
+                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                  fontSize: 14,
+                  lineHeight: 1.6,
+                  resize: 'none',
+                  outline: 'none',
+                }}
+              />
+            )}
           </div>
 
           {/* Sentence-by-Sentence Detailed Table */}

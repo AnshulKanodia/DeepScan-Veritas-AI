@@ -108,18 +108,37 @@ export default function MonacoHeatmap({
   }, [sentences, lines, mode]);
 
   return (
-    <div className="relative w-full h-full rounded-xl overflow-hidden border border-slate-800 bg-[#0d1117] shadow-inner">
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        minHeight: '400px',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        border: '1px solid #1E293B',
+        backgroundColor: '#0d1117',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Editor
         height="100%"
+        width="100%"
         language={language}
         value={value}
         onChange={onChange}
         theme="vs-dark"
         onMount={handleEditorDidMount}
+        loading={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: '350px', color: '#64748B', fontSize: 13, gap: 8 }}>
+            <span>Loading Forensic Monaco Canvas...</span>
+          </div>
+        }
         options={{
           minimap: { enabled: false },
           fontSize: 14,
-          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+          fontFamily: "'JetBrains Mono', 'Fira Code', Menlo, monospace",
           lineNumbers: 'on',
           scrollBeyondLastLine: false,
           automaticLayout: true,
@@ -129,6 +148,7 @@ export default function MonacoHeatmap({
           cursorBlinking: 'smooth',
           cursorSmoothCaretAnimation: 'on',
           smoothScrolling: true,
+          overviewRulerBorder: false,
         }}
       />
     </div>

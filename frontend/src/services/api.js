@@ -36,6 +36,17 @@ export async function analyzeCode(code, language = 'python') {
   return await response.json();
 }
 
+export async function getScanHistory() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/history`);
+    if (!response.ok) throw new Error('Failed to fetch scan history');
+    return await response.json();
+  } catch (err) {
+    console.error('History fetch error:', err);
+    return [];
+  }
+}
+
 export async function downloadForensicPdf(reportPayload) {
   const response = await fetch(`${API_BASE_URL}/api/v1/export/pdf`, {
     method: 'POST',

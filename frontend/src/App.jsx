@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import {
   ShieldAlert, FileText, Code2, Download, Play, RefreshCw,
-  Sparkles, AlertCircle, Terminal
+  Sparkles, AlertCircle, Terminal, History
 } from 'lucide-react';
 import MonacoHeatmap from './components/MonacoHeatmap';
 import ForensicMetrics from './components/ForensicMetrics';
-import { analyzeText, analyzeCode, downloadForensicPdf, checkBackendHealth } from './services/api';
+import SentenceTable from './components/SentenceTable';
+import ScanHistoryModal from './components/ScanHistoryModal';
+import {
+  analyzeText, analyzeCode, downloadForensicPdf,
+  checkBackendHealth, getScanHistory
+} from './services/api';
 import { SAMPLE_TEXTS, SAMPLE_CODES } from './data/samples';
 
 export default function App() {
@@ -17,6 +22,10 @@ export default function App() {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [engineStatus, setEngineStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [errorMsg, setErrorMsg] = useState(null);
+  
+  // Audit History state
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyList, setHistoryList] = useState([]);
 
   // Poll backend health once on mount
   useEffect(() => {
@@ -63,6 +72,12 @@ export default function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenHistory = async () => {
+    const list = await getScanHistory();
+    setHistoryList(list);
+    setShowHistoryModal(true);
   };
 
   const handleExportPdf = async () => {
@@ -127,7 +142,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* Engine Status & Export */}
+        {/* Engine Status & Actions */}
         <div className="header-actions">
           <div className="status-pill">
             <div className={`status-dot ${engineStatus}`} />
@@ -139,6 +154,15 @@ export default function App() {
                 : 'Backend: Offline'}
             </span>
           </div>
+
+          <button
+            id="btn-view-history"
+            onClick={handleOpenHistory}
+            className="btn-secondary"
+          >
+            <History size={14} color="#06B6D4" />
+            Audit Logs
+          </button>
 
           <button
             id="btn-export-pdf"
@@ -273,7 +297,7 @@ export default function App() {
 
       {/* Main Workspace: Split Editor & Forensic Dashboard */}
       <main className="workspace-main">
-        {/* Left Side: Monaco Editor Visual Heatmap */}
+        {/* Left Side: Monaco Editor Visual Heatmap + Sentence Breakdown Table */}
         <section className="editor-section">
           <div className="section-header-row">
             <div className="section-label">
@@ -284,7 +308,8 @@ export default function App() {
               Click any colored sentence or line to inspect token surprise
             </span>
           </div>
-          <div className="editor-wrapper">
+
+          <div className="editor-wrapper" style={{ flex: analysisResult ? '0 0 58%' : '1' }}>
             <MonacoHeatmap
               value={content}
               onChange={(val) => setContent(val || '')}
@@ -295,6 +320,17 @@ export default function App() {
               onSelectSegment={(seg) => setSelectedSegment(seg)}
             />
           </div>
+
+          {/* Sentence-by-Sentence Detailed Table */}
+          {analysisResult && (
+            <SentenceTable
+              sentences={analysisResult.sentences}
+              lines={analysisResult.lines}
+              mode={mode}
+              selectedSegment={selectedSegment}
+              onSelectSegment={(seg) => setSelectedSegment(seg)}
+            />
+          )}
         </section>
 
         {/* Right Side: Deep Statistical Dashboard */}
@@ -306,6 +342,13 @@ export default function App() {
           />
         </aside>
       </main>
+
+      {/* Audit History Modal */}
+      <ScanHistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        history={historyList}
+      />
     </div>
   );
 }

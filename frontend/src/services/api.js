@@ -4,13 +4,25 @@ const API_BASE_URL =
     : (import.meta.env.DEV ? 'http://localhost:7860' : '');
 
 export async function checkBackendHealth() {
-  try {
-    const res = await fetch(`${API_BASE_URL}/health`);
-    if (!res.ok) throw new Error('Health check failed');
-    return await res.json();
-  } catch (err) {
-    return { status: 'offline', error: err.message };
+  const tryEndpoints = [`${API_BASE_URL}/api/health`, `${API_BASE_URL}/health`];
+
+  for (const url of tryEndpoints) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return await res.json();
+    } catch {
+      // Continue to next endpoint
+    }
   }
+
+  // Quick 1-second retry in case of cold-start
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const retryRes = await fetch(`${API_BASE_URL}/api/health`);
+    if (retryRes.ok) return await retryRes.json();
+  } catch {}
+
+  return { status: 'offline' };
 }
 
 export async function analyzeText(text) {

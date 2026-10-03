@@ -241,32 +241,65 @@ async def extract_file_endpoint(payload: FileExtractRequest):
     detected_mode = "code" if ext in code_ext_map else "text"
     language = code_ext_map.get(ext, "python" if detected_mode == "code" else "markdown")
 
+    raw_bytes = b""
     if payload.raw_text:
         content = payload.raw_text
         size = len(content.encode("utf-8"))
     elif payload.content_base64:
         try:
-            raw_bytes = base64.b64decode(payload.content_base64)
+            b64_str = payload.content_base64
+            if "," in b64_str:
+                b64_str = b64_str.split(",", 1)[1]
+            raw_bytes = base64.b64decode(b64_str)
             size = len(raw_bytes)
-            try:
-                content = raw_bytes.decode("utf-8")
-            except UnicodeDecodeError:
-                content = raw_bytes.decode("latin-1", errors="replace")
         except Exception:
-            content = ""
+            raw_bytes = b""
             size = 0
+            content = ""
     else:
         content = ""
         size = 0
 
-    # If PDF, extract printable text streams
-    if ext == ".pdf" and content:
-        text_matches = re.findall(r'\(([^\(\)]{3,})\)', content)
-        if text_matches:
-            content = " ".join(text_matches[:300])
-        else:
-            content = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\xff]', ' ', content)
-            content = " ".join(content.split()[:500])
+    # Extract PDF text using pypdf with stream fallback
+    if ext == ".pdf" and raw_bytes:
+        try:
+            import io
+            import pypdf
+            reader = pypdf.PdfReader(io.BytesIO(raw_bytes))
+            extracted_pages = []
+            for page in reader.pages:
+                t = page.extract_text()
+                if t:
+                    extracted_pages.append(t)
+            content = "\n\n".join(extracted_pages)
+        except Exception:
+            text_matches = re.findall(r'\(([^\(\)]{3,})\)', raw_bytes.decode('latin-1', errors='ignore'))
+            content = " ".join(text_matches[:300]) if text_matches else ""
+
+    # Extract DOCX text using built-in zipfile & XML parser
+    elif ext in [".docx", ".doc"] and raw_bytes:
+        try:
+            import io
+            import zipfile
+            import xml.etree.ElementTree as ET
+            with zipfile.ZipFile(io.BytesIO(raw_bytes)) as z:
+                xml_content = z.read("word/document.xml")
+                root = ET.fromstring(xml_content)
+                paragraphs = []
+                for p in root.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p"):
+                    texts = [t.text for t in p.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t") if t.text]
+                    if texts:
+                        paragraphs.append("".join(texts))
+                content = "\n\n".join(paragraphs)
+        except Exception:
+            clean_strs = re.findall(r'[A-Za-z0-9\s,\.\?!]{4,}', raw_bytes.decode('latin-1', errors='ignore'))
+            content = " ".join(clean_strs[:400])
+
+    elif not payload.raw_text and raw_bytes:
+        try:
+            content = raw_bytes.decode("utf-8")
+        except UnicodeDecodeError:
+            content = raw_bytes.decode("latin-1", errors="replace")
 
     return FileExtractResponse(
         status="success",

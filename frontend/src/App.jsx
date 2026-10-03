@@ -65,6 +65,33 @@ export default function App() {
     const name = file.name || 'document.txt';
     const ext = name.includes('.') ? '.' + name.split('.').pop().toLowerCase() : '';
 
+    // Handle PDF and Word documents via backend extractor
+    if (ext === '.pdf' || ext === '.docx' || ext === '.doc') {
+      setUploadNotice(`Extracting text from ${name}...`);
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const base64Data = e.target.result;
+          const data = await extractFile(name, null, base64Data);
+          if (!data.content || !data.content.trim()) {
+            throw new Error('No readable text could be extracted from this document.');
+          }
+          setMode('text');
+          setContent(data.content);
+          setAnalysisResult(null);
+          setSelectedSegment(null);
+          const words = data.content.trim().split(/\s+/).length;
+          setUploadNotice(`Extracted "${name}" (${(file.size / 1024).toFixed(1)} KB, ${words} words) - Ready for Analysis`);
+          setTimeout(() => setUploadNotice(null), 5000);
+        } catch (err) {
+          setErrorMsg(err.message || `Failed to extract text from ${name}.`);
+          setUploadNotice(null);
+        }
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
     const codeExts = {
       '.py': 'python',
       '.js': 'javascript',
@@ -281,7 +308,7 @@ export default function App() {
             id="btn-upload-file"
             onClick={() => fileInputRef.current?.click()}
             className="btn-tool"
-            title="Upload .txt, .py, .js, .ts, .java, .cpp, .go, .md"
+            title="Upload .pdf, .docx, .txt, or source code files"
           >
             <Upload size={13} color="#06B6D4" />
             Upload File
@@ -289,7 +316,7 @@ export default function App() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".txt,.py,.js,.jsx,.ts,.tsx,.json,.md,.cpp,.c,.java,.go,.html,.css"
+            accept=".txt,.pdf,.docx,.doc,.py,.js,.jsx,.ts,.tsx,.json,.md,.cpp,.c,.java,.go,.html,.css"
             style={{ display: 'none' }}
             onChange={(e) => {
               if (e.target.files && e.target.files.length > 0) {
@@ -482,7 +509,7 @@ export default function App() {
                   Drop file to import into Veritas AI
                 </span>
                 <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>
-                  Supports .txt, .py, .js, .ts, .java, .cpp, .go, .md, .json
+                  Supports .pdf, .docx, .txt, .py, .js, .ts, .java, .cpp, .go, .md
                 </span>
               </div>
             )}

@@ -4,12 +4,60 @@ import { ShieldCheck, AlertTriangle, Cpu, Activity, BarChart2, Hash, Layers, Cod
 export default function ForensicMetrics({ metrics, selectedSegment, mode }) {
   if (!metrics) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center', color: '#64748B', border: '1px dashed #1E293B', borderRadius: '12px', padding: '24px' }}>
-        <Activity style={{ width: 44, height: 44, opacity: 0.4, color: '#06B6D4', marginBottom: 12 }} />
-        <p style={{ fontSize: 13, fontWeight: 600, color: '#94A3B8' }}>Awaiting Forensic Analysis</p>
-        <p style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>
-          Analyze text or source code to visualize perplexity, burstiness, and AST entropy.
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        textAlign: 'center',
+        color: '#64748B',
+        border: '1px dashed rgba(255, 255, 255, 0.1)',
+        borderRadius: '14px',
+        padding: '36px 24px',
+        backgroundColor: 'rgba(15, 23, 42, 0.3)'
+      }}>
+        <div style={{
+          width: 52,
+          height: 52,
+          borderRadius: 14,
+          backgroundColor: 'rgba(6, 182, 212, 0.1)',
+          border: '1px solid rgba(6, 182, 212, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 16
+        }}>
+          <Activity size={24} color="#06B6D4" />
+        </div>
+        <p style={{ fontSize: 14, fontWeight: 700, color: '#F1F5F9' }}>Awaiting Forensic Analysis</p>
+        <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 6, maxWidth: 280, lineHeight: 1.5 }}>
+          Import or paste content to compute statistical perplexity, AST depth, and structural entropy.
         </p>
+        <div style={{
+          marginTop: 20,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+          width: '100%',
+          maxWidth: 260,
+          fontSize: 11,
+          color: '#64748B',
+          textAlign: 'left'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#06B6D4' }} />
+            <span>N-gram Perplexity ($PPL$) & Burstiness</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#10B981' }} />
+            <span>Abstract Syntax Tree (AST) Parsing</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#F59E0B' }} />
+            <span>QuillBot & StealthGPT Bypass Detection</span>
+          </div>
+        </div>
       </div>
     );
   }

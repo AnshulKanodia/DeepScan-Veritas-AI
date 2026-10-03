@@ -9,7 +9,6 @@ import ForensicMetrics from './components/ForensicMetrics';
 import SentenceTable from './components/SentenceTable';
 import ScanHistoryModal from './components/ScanHistoryModal';
 import UrlScanModal from './components/UrlScanModal';
-import ApiModal from './components/ApiModal';
 import {
   analyzeText, analyzeCode, downloadForensicPdf,
   checkBackendHealth, getScanHistory, extractFile
@@ -25,14 +24,12 @@ export default function App() {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [engineStatus, setEngineStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
   const [errorMsg, setErrorMsg] = useState(null);
-  const [editorType, setEditorType] = useState('monaco'); // 'monaco' | 'textarea'
   const [uploadNotice, setUploadNotice] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
   // Modals state
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
-  const [showApiModal, setShowApiModal] = useState(false);
   const [historyList, setHistoryList] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -81,7 +78,7 @@ export default function App() {
           setAnalysisResult(null);
           setSelectedSegment(null);
           const words = data.content.trim().split(/\s+/).length;
-          setUploadNotice(`Extracted "${name}" (${(file.size / 1024).toFixed(1)} KB, ${words} words) - Ready for Analysis`);
+          setUploadNotice(`Extracted "${name}" (${(file.size / 1024).toFixed(1)} KB, ${words} words)`);
           setTimeout(() => setUploadNotice(null), 5000);
         } catch (err) {
           setErrorMsg(err.message || `Failed to extract text from ${name}.`);
@@ -120,7 +117,7 @@ export default function App() {
       setContent(text);
       setAnalysisResult(null);
       setSelectedSegment(null);
-      setUploadNotice(`Imported "${name}" (${(file.size / 1024).toFixed(1)} KB) - Ready for Analysis`);
+      setUploadNotice(`Loaded "${name}" (${(file.size / 1024).toFixed(1)} KB)`);
       setTimeout(() => setUploadNotice(null), 4500);
     };
     reader.readAsText(file);
@@ -209,15 +206,15 @@ export default function App() {
       <header className="app-header">
         <div className="brand-group">
           <div className="brand-icon-box">
-            <ShieldAlert size={20} color="#06B6D4" />
+            <ShieldAlert size={22} color="#06B6D4" />
           </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="brand-text-wrap">
+            <div className="brand-title-row">
               <h1 className="brand-title">VERITAS AI</h1>
-              <span className="brand-badge">Forensic Engine v1.2</span>
+              <span className="brand-badge">Forensic v1.2</span>
             </div>
             <p className="brand-sub">
-              Statistical Perplexity, Multi-Language AST & Information Entropy
+              Statistical Perplexity & Multi-Language Code Forensics
             </p>
           </div>
         </div>
@@ -229,41 +226,31 @@ export default function App() {
             onClick={() => handleModeChange('text')}
             className={`tab-btn ${mode === 'text' ? 'active' : ''}`}
           >
-            <FileText size={14} />
-            Natural Language (PPL)
+            <FileText size={15} />
+            <span>Natural Language</span>
           </button>
           <button
             id="tab-code-mode"
             onClick={() => handleModeChange('code')}
             className={`tab-btn ${mode === 'code' ? 'active' : ''}`}
           >
-            <Code2 size={14} />
-            Source Code (AST)
+            <Code2 size={15} />
+            <span>Source Code</span>
           </button>
         </div>
 
         {/* Engine Status & Header Action Controls */}
         <div className="header-actions">
-          <div className="status-pill">
+          <div className="status-pill" title={`Forensic Engine: ${engineStatus}`}>
             <div className={`status-dot ${engineStatus}`} />
-            <span style={{ color: '#CBD5E1' }}>
+            <span>
               {engineStatus === 'online'
-                ? 'Backend: Online'
+                ? 'Engine Online'
                 : engineStatus === 'checking'
-                ? 'Checking...'
-                : 'Backend: Offline'}
+                ? 'Connecting...'
+                : 'Offline'}
             </span>
           </div>
-
-          <button
-            id="btn-view-api"
-            onClick={() => setShowApiModal(true)}
-            className="btn-secondary"
-            title="View Developer API & cURL examples"
-          >
-            <Code2 size={14} color="#06B6D4" />
-            Developer API
-          </button>
 
           <button
             id="btn-view-history"
@@ -271,8 +258,8 @@ export default function App() {
             className="btn-secondary"
             title="View Previous Forensic Scans"
           >
-            <History size={14} color="#06B6D4" />
-            Audit Logs
+            <History size={15} color="#06B6D4" />
+            <span>Audit Logs</span>
           </button>
 
           <button
@@ -280,29 +267,17 @@ export default function App() {
             onClick={handleExportPdf}
             disabled={!analysisResult || exporting}
             className="btn-secondary"
-            title="Download Cryptographic Audit Certificate"
+            title="Download Cryptographic Audit Certificate (PDF)"
           >
-            <Download size={14} color="#06B6D4" />
-            {exporting ? 'Generating...' : 'Export Audit PDF'}
+            <Download size={15} color="#06B6D4" />
+            <span>{exporting ? 'Generating...' : 'Export Audit PDF'}</span>
           </button>
         </div>
       </header>
 
       {/* Action Toolbar & Legend */}
       <div className="toolbar-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <button
-            id="btn-clear-content"
-            onClick={() => {
-              setContent('');
-              setAnalysisResult(null);
-              setSelectedSegment(null);
-            }}
-            className="clear-btn"
-          >
-            Clear Editor
-          </button>
-
+        <div className="toolbar-left">
           {/* File Upload Button */}
           <button
             id="btn-upload-file"
@@ -310,8 +285,8 @@ export default function App() {
             className="btn-tool"
             title="Upload .pdf, .docx, .txt, or source code files"
           >
-            <Upload size={13} color="#06B6D4" />
-            Upload File
+            <Upload size={14} color="#06B6D4" />
+            <span>Import Document</span>
           </button>
           <input
             ref={fileInputRef}
@@ -333,14 +308,14 @@ export default function App() {
             className="btn-tool"
             title="Extract and inspect from Web link or GitHub"
           >
-            <Globe size={13} color="#38BDF8" />
-            Scan URL
+            <Globe size={14} color="#38BDF8" />
+            <span>Scan URL</span>
           </button>
 
           {/* Multi-Language Selector for Code Mode */}
           {mode === 'code' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 6 }}>
-              <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>Language:</span>
+            <div className="lang-picker-group">
+              <span className="lang-label">Language:</span>
               <select
                 id="select-code-language"
                 value={codeLanguage}
@@ -360,30 +335,43 @@ export default function App() {
             </div>
           )}
 
-          <span style={{ fontSize: '0.8rem', color: '#64748B', fontFamily: 'monospace', marginLeft: 8 }}>
+          <button
+            id="btn-clear-content"
+            onClick={() => {
+              setContent('');
+              setAnalysisResult(null);
+              setSelectedSegment(null);
+            }}
+            className="clear-btn"
+            title="Clear editor text"
+          >
+            Clear
+          </button>
+
+          <div className="counter-pill">
             {mode === 'text'
               ? `${content.trim() ? content.trim().split(/\s+/).length : 0} words`
               : `${content ? content.split('\n').length : 0} lines`}
-          </span>
+          </div>
         </div>
 
-        {/* Legend */}
+        {/* Clean Visual Legend */}
         <div className="legend-group">
-          <div className="legend-item">
+          <div className="legend-item" title="High structural perplexity and burstiness typical of humans">
             <span className="legend-box human" />
-            <span>Likely Human (Green)</span>
+            <span>Human (&lt;35%)</span>
           </div>
-          <div className="legend-item">
+          <div className="legend-item" title="Mixed or AI-assisted content">
             <span className="legend-box mixed" />
-            <span>Mixed / Refined (Amber)</span>
+            <span>Mixed (35-70%)</span>
           </div>
-          <div className="legend-item">
+          <div className="legend-item" title="Low perplexity uniformity characteristic of LLMs">
             <span className="legend-box ai" />
-            <span>Likely AI (Red)</span>
+            <span>AI (&gt;70%)</span>
           </div>
         </div>
 
-        {/* Run Analysis Button */}
+        {/* Primary CTA Button */}
         <button
           id="btn-run-analysis"
           onClick={handleRunAnalysis}
@@ -392,13 +380,13 @@ export default function App() {
         >
           {loading ? (
             <>
-              <RefreshCw size={14} className="animate-spin" />
-              Scanning Perplexity...
+              <RefreshCw size={15} className="animate-spin" />
+              <span>Scanning Perplexity...</span>
             </>
           ) : (
             <>
-              <Play size={14} fill="#020617" />
-              Analyze Authenticity
+              <Play size={15} fill="currentColor" />
+              <span>Analyze Authenticity</span>
             </>
           )}
         </button>
@@ -406,33 +394,22 @@ export default function App() {
 
       {/* Upload Notification Banner */}
       {uploadNotice && (
-        <div style={{
-          margin: '0 24px 12px 24px',
-          padding: '8px 14px',
-          borderRadius: 6,
-          backgroundColor: 'rgba(6, 182, 212, 0.12)',
-          border: '1px solid rgba(6, 182, 212, 0.3)',
-          color: '#38BDF8',
-          fontSize: '0.8rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8
-        }}>
-          <CheckCircle2 size={14} color="#06B6D4" />
+        <div className="notification-banner info">
+          <CheckCircle2 size={15} color="#06B6D4" />
           <span>{uploadNotice}</span>
         </div>
       )}
 
       {/* Error notification banner */}
       {errorMsg && (
-        <div className="error-banner">
+        <div className="notification-banner error">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <AlertCircle size={16} color="#F87171" />
             <span>{errorMsg}</span>
           </div>
           <button
             onClick={() => setErrorMsg(null)}
-            style={{ background: 'none', border: 'none', color: '#FCA5A5', cursor: 'pointer' }}
+            className="dismiss-btn"
           >
             Dismiss
           </button>
@@ -445,48 +422,14 @@ export default function App() {
         <section className="editor-section">
           <div className="section-header-row">
             <div className="section-label">
-              <Terminal size={14} color="#06B6D4" />
-              <span>Interactive Forensic Heatmap Canvas</span>
+              <Terminal size={15} color="#06B6D4" />
+              <span>Forensic Heatmap Canvas</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ display: 'flex', backgroundColor: '#0F172A', borderRadius: 6, border: '1px solid #1E293B', padding: 2 }}>
-                <button
-                  id="btn-view-monaco"
-                  onClick={() => setEditorType('monaco')}
-                  style={{
-                    padding: '3px 8px',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    borderRadius: 4,
-                    border: 'none',
-                    cursor: 'pointer',
-                    backgroundColor: editorType === 'monaco' ? '#06B6D4' : 'transparent',
-                    color: editorType === 'monaco' ? '#020617' : '#94A3B8'
-                  }}
-                >
-                  Monaco Heatmap
-                </button>
-                <button
-                  id="btn-view-textarea"
-                  onClick={() => setEditorType('textarea')}
-                  style={{
-                    padding: '3px 8px',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    borderRadius: 4,
-                    border: 'none',
-                    cursor: 'pointer',
-                    backgroundColor: editorType === 'textarea' ? '#06B6D4' : 'transparent',
-                    color: editorType === 'textarea' ? '#020617' : '#94A3B8'
-                  }}
-                >
-                  Plain Textbox
-                </button>
-              </div>
-              <span className="section-hint">
-                Click any colored segment to inspect
-              </span>
-            </div>
+            <span className="section-hint">
+              {analysisResult
+                ? 'Click any colored segment to inspect granular metrics'
+                : 'Type, paste, or drop documents (.pdf, .docx, .txt, code)'}
+            </span>
           </div>
 
           <div
@@ -504,48 +447,25 @@ export default function App() {
           >
             {isDragging && (
               <div className="drag-drop-overlay">
-                <Upload size={38} color="#06B6D4" style={{ marginBottom: 10 }} />
+                <Upload size={40} color="#06B6D4" style={{ marginBottom: 12 }} />
                 <span style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC' }}>
-                  Drop file to import into Veritas AI
+                  Drop document to import into Veritas AI
                 </span>
                 <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>
-                  Supports .pdf, .docx, .txt, .py, .js, .ts, .java, .cpp, .go, .md
+                  Supports PDF, Word (.docx), text, and multi-language code
                 </span>
               </div>
             )}
 
-            {editorType === 'monaco' ? (
-              <MonacoHeatmap
-                value={content}
-                onChange={handleContentChange}
-                language={mode === 'text' ? 'markdown' : codeLanguage}
-                sentences={analysisResult?.sentences || []}
-                lines={analysisResult?.lines || []}
-                mode={mode}
-                onSelectSegment={(seg) => setSelectedSegment(seg)}
-              />
-            ) : (
-              <textarea
-                value={content}
-                onChange={(e) => handleContentChange(e.target.value)}
-                placeholder="Type or paste your text or source code here to analyze..."
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  minHeight: '380px',
-                  backgroundColor: '#0D1117',
-                  color: '#F1F5F9',
-                  border: '1px solid #1E293B',
-                  borderRadius: 12,
-                  padding: 16,
-                  fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  fontSize: 14,
-                  lineHeight: 1.6,
-                  resize: 'none',
-                  outline: 'none',
-                }}
-              />
-            )}
+            <MonacoHeatmap
+              value={content}
+              onChange={handleContentChange}
+              language={mode === 'text' ? 'markdown' : codeLanguage}
+              sentences={analysisResult?.sentences || []}
+              lines={analysisResult?.lines || []}
+              mode={mode}
+              onSelectSegment={(seg) => setSelectedSegment(seg)}
+            />
           </div>
 
           {/* Sentence-by-Sentence Detailed Table */}
@@ -591,12 +511,6 @@ export default function App() {
           setUploadNotice(`Extracted article "${data.title}" from URL`);
           setTimeout(() => setUploadNotice(null), 4500);
         }}
-      />
-
-      {/* Developer API Modal */}
-      <ApiModal
-        isOpen={showApiModal}
-        onClose={() => setShowApiModal(false)}
       />
     </div>
   );

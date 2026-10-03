@@ -27,6 +27,19 @@ export default function App() {
   const [uploadNotice, setUploadNotice] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Mobile adaptive touch editor state
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 868);
+  const [editorMode, setEditorMode] = useState(() => (typeof window !== 'undefined' && window.innerWidth <= 868 ? 'touch' : 'monaco'));
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 868;
+      setIsMobile(mobile);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Modals state
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
@@ -423,13 +436,41 @@ export default function App() {
           <div className="section-header-row">
             <div className="section-label">
               <Terminal size={15} color="#06B6D4" />
-              <span>Forensic Heatmap Canvas</span>
+              <span>{editorMode === 'touch' ? 'Touch Editor (Mobile)' : 'Forensic Heatmap Canvas'}</span>
             </div>
-            <span className="section-hint">
-              {analysisResult
-                ? 'Click any colored segment to inspect granular metrics'
-                : 'Type, paste, or drop documents (.pdf, .docx, .txt, code)'}
-            </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {isMobile && (
+                <div className="editor-mode-toggle">
+                  <button
+                    id="btn-switch-touch"
+                    type="button"
+                    onClick={() => setEditorMode('touch')}
+                    className={`mode-toggle-btn ${editorMode === 'touch' ? 'active' : ''}`}
+                    title="Native mobile touch input with keyboard"
+                  >
+                    Touch Editor
+                  </button>
+                  <button
+                    id="btn-switch-heatmap"
+                    type="button"
+                    onClick={() => setEditorMode('monaco')}
+                    className={`mode-toggle-btn ${editorMode === 'monaco' ? 'active' : ''}`}
+                    title="Monaco heatmap canvas"
+                  >
+                    Heatmap View
+                  </button>
+                </div>
+              )}
+
+              <span className="section-hint">
+                {analysisResult
+                  ? 'Click any colored segment to inspect granular metrics'
+                  : editorMode === 'touch'
+                  ? 'Tap to type or paste text'
+                  : 'Type, paste, or drop documents (.pdf, .docx, .txt, code)'}
+              </span>
+            </div>
           </div>
 
           <div
@@ -457,15 +498,32 @@ export default function App() {
               </div>
             )}
 
-            <MonacoHeatmap
-              value={content}
-              onChange={handleContentChange}
-              language={mode === 'text' ? 'markdown' : codeLanguage}
-              sentences={analysisResult?.sentences || []}
-              lines={analysisResult?.lines || []}
-              mode={mode}
-              onSelectSegment={(seg) => setSelectedSegment(seg)}
-            />
+            {editorMode === 'touch' ? (
+              <textarea
+                id="mobile-touch-input"
+                value={content}
+                onChange={(e) => handleContentChange(e.target.value)}
+                placeholder={
+                  mode === 'text'
+                    ? 'Tap here to type or paste essay, prose, or article to analyze...'
+                    : 'Tap here to type or paste source code to analyze...'
+                }
+                className="mobile-touch-textarea"
+                autoCapitalize="sentences"
+                autoCorrect="on"
+                spellCheck="true"
+              />
+            ) : (
+              <MonacoHeatmap
+                value={content}
+                onChange={handleContentChange}
+                language={mode === 'text' ? 'markdown' : codeLanguage}
+                sentences={analysisResult?.sentences || []}
+                lines={analysisResult?.lines || []}
+                mode={mode}
+                onSelectSegment={(seg) => setSelectedSegment(seg)}
+              />
+            )}
           </div>
 
           {/* Sentence-by-Sentence Detailed Table */}

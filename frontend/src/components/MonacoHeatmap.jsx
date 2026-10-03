@@ -178,6 +178,7 @@ export default function MonacoHeatmap({
           fontSize: 14,
           fontFamily: "'JetBrains Mono', 'Fira Code', Menlo, monospace",
           lineNumbers: 'on',
+          accessibilitySupport: 'on',
           scrollBeyondLastLine: false,
           automaticLayout: true,
           wordWrap: 'on',

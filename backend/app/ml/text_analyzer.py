@@ -142,6 +142,33 @@ class TextForensicEngine:
         top100_ratio = round(min(99.5, 75.0 + (ai_confidence * 0.24)), 1)
 
         words = text.split()
+
+        # Paraphrase & AI Humanizer Detection (QuillBot / StealthGPT bypass detection)
+        # Signature: Flat sentence length & low burstiness combined with artificial thesaurus synonym density
+        thesaurus_swaps = {
+            "utilize", "utilized", "utilizing", "imperative", "paramount", "facilitate",
+            "facilitates", "quandary", "manifests", "plethora", "myriad", "juxtaposition",
+            "ameliorate", "delineate", "delineates", "elucidate", "elucidates", "cognizant",
+            "concomitant", "paucity", "ubiquitous", "efficacious", "indispensable", "burgeoning"
+        }
+        thesaurus_hits = sum(1 for w in words if w.lower().strip(".,!?;:\"()[]") in thesaurus_swaps)
+        thesaurus_ratio = thesaurus_hits / max(1, len(words))
+
+        if burstiness < 0.28 and thesaurus_ratio > 0.02:
+            humanizer_score = min(96.0, 50.0 + (thesaurus_ratio * 400.0) + ((0.28 - burstiness) * 60.0))
+        elif ai_confidence > 60.0 and thesaurus_hits >= 2:
+            humanizer_score = min(85.0, 35.0 + (thesaurus_hits * 8.0))
+        else:
+            humanizer_score = max(2.5, min(35.0, round(thesaurus_ratio * 120.0, 1)))
+
+        humanizer_score = round(humanizer_score, 1)
+        if humanizer_score >= 70.0:
+            humanizer_verdict = "Stealth Paraphrase Detected"
+        elif humanizer_score >= 40.0:
+            humanizer_verdict = "Moderate Rephrasing"
+        else:
+            humanizer_verdict = "None Detected"
+
         metrics = TextAnalysisMetrics(
             overall_ai_score=ai_confidence,
             verdict=verdict_label,
@@ -153,7 +180,9 @@ class TextForensicEngine:
             top100_token_ratio=top100_ratio,
             sentence_count=len(spans),
             word_count=len(words),
-            forensic_hash=forensic_hash
+            forensic_hash=forensic_hash,
+            humanizer_score=humanizer_score,
+            humanizer_verdict=humanizer_verdict
         )
 
         return TextAnalysisResponse(

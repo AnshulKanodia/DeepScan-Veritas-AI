@@ -27,11 +27,36 @@ class TextAnalysisMetrics(BaseModel):
     sentence_count: int
     word_count: int
     forensic_hash: str
+    humanizer_score: Optional[float] = Field(0.0, description="Paraphraser / AI humanizer bypass confidence (0-100)")
+    humanizer_verdict: Optional[str] = Field("None Detected", description="Humanizer classification")
 
 class TextAnalysisResponse(BaseModel):
     status: str = "success"
     metrics: TextAnalysisMetrics
     sentences: List[SentenceSpan]
+
+class UrlAnalysisRequest(BaseModel):
+    url: str = Field(..., description="Webpage or raw code URL to extract and analyze")
+
+class UrlAnalysisResponse(BaseModel):
+    status: str = "success"
+    url: str
+    title: str
+    extracted_text: str
+    analysis: TextAnalysisResponse
+
+class FileExtractRequest(BaseModel):
+    filename: str
+    content_base64: Optional[str] = None
+    raw_text: Optional[str] = None
+
+class FileExtractResponse(BaseModel):
+    status: str = "success"
+    filename: str
+    content: str
+    size: int
+    detected_mode: Literal["text", "code"]
+    language: str
 
 class CodeAnalysisRequest(BaseModel):
     code: str = Field(..., min_length=10, description="The source code snippet to analyze")

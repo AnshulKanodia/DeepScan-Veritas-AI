@@ -1,6 +1,7 @@
 import ast
+import re
 import math
-from typing import Dict, Any, List, Set
+from typing import Dict, Any, List, Set, Optional
 from app.ml.features import calculate_shannon_entropy, compute_sha256, score_to_color_and_verdict
 from app.api.schemas import CodeAnalysisMetrics, CodeLineSpan, CodeAnalysisResponse
 
@@ -8,10 +9,19 @@ class CodeAstAnalyzer:
     """
     Forensic static analyzer for source code to detect AI-generated patterns
     via AST depth distribution, identifier naming entropy, and structural metrics.
+    Supports Python, JavaScript, TypeScript, Java, C++, and Go.
     """
 
-    @staticmethod
-    def analyze_python_code(code: str) -> CodeAnalysisResponse:
+    @classmethod
+    def analyze_code(cls, code: str, language: str = "python") -> CodeAnalysisResponse:
+        lang = language.lower().strip()
+        if lang in ["python", "py"]:
+            return cls.analyze_python_code(code)
+        else:
+            return cls.analyze_generic_code(code, lang)
+
+    @classmethod
+    def analyze_python_code(cls, code: str) -> CodeAnalysisResponse:
         lines = code.splitlines()
         loc_count = len(lines)
         forensic_hash = compute_sha256(code)
@@ -62,20 +72,75 @@ class CodeAstAnalyzer:
             max_depth = 3
             branches = sum(1 for line in lines if any(k in line for k in ["if ", "for ", "while ", "def ", "try:"]))
 
+        return cls._score_and_build_response(lines, identifiers, max_depth, branches, comment_density, loc_count, forensic_hash, "python")
+
+    @classmethod
+    def analyze_generic_code(cls, code: str, language: str) -> CodeAnalysisResponse:
+        """
+        Lexical and bracket-nesting AST analyzer for JS/TS, Java, C++, Go, and C#.
+        """
+        lines = code.splitlines()
+        loc_count = len(lines)
+        forensic_hash = compute_sha256(code)
+
+        comment_lines = 0
+        current_depth = 0
+        max_depth = 0
+        branches = 0
+        identifiers: List[str] = []
+
+        # Identifier extraction pattern
+        id_pattern = re.compile(r'\b([a-zA-Z_$][a-zA-Z0-9_$]{1,30})\b')
+        reserved_keywords = {
+            "const", "let", "var", "function", "return", "class", "import", "export",
+            "from", "default", "if", "else", "for", "while", "do", "switch", "case",
+            "break", "continue", "try", "catch", "finally", "throw", "new", "this",
+            "public", "private", "protected", "static", "void", "int", "float", "double",
+            "string", "boolean", "package", "func", "struct", "interface", "type"
+        }
+
+        for line in lines:
+            stripped = line.strip()
+            # Comments
+            if stripped.startswith("//") or stripped.startswith("/*") or stripped.startswith("*"):
+                comment_lines += 1
+
+            # Track nesting depth via braces
+            open_braces = line.count("{") - line.count("}")
+            current_depth = max(0, current_depth + open_braces)
+            if current_depth > max_depth:
+                max_depth = current_depth
+
+            # Control flow branching
+            if any(re.search(rf'\b{kw}\b', stripped) for kw in ["if", "for", "while", "switch", "catch"]):
+                branches += 1
+
+            # Extract identifier tokens
+            for match in id_pattern.finditer(line):
+                token = match.group(1)
+                if token.lower() not in reserved_keywords:
+                    identifiers.append(token)
+
+        comment_density = round((comment_lines / max(1, loc_count)) * 100, 2)
+        max_depth = max(2, max_depth)
+
+        return cls._score_and_build_response(lines, identifiers, max_depth, branches, comment_density, loc_count, forensic_hash, language)
+
+    @classmethod
+    def _score_and_build_response(
+        cls, lines: List[str], identifiers: List[str], max_depth: int,
+        branches: int, comment_density: float, loc_count: int,
+        forensic_hash: str, language: str
+    ) -> CodeAnalysisResponse:
         # Calculate identifier Shannon entropy
-        combined_ids = "".join(identifiers) if identifiers else code
+        combined_ids = "".join(identifiers) if identifiers else "".join(lines)
         id_entropy = calculate_shannon_entropy(combined_ids)
 
-        # AI-generated code characteristics:
-        # 1. Extremely standard, textbook identifier names (moderate-to-low entropy, e.g. 'result', 'total', 'item')
-        # 2. Perfect, uniform indentation and standard AST depth (typically 3 to 6)
-        # 3. High boilerplate-to-logic ratio
-        # 4. Canonical variable names like 'data', 'temp', 'res', 'item', 'value'
-        textbook_names = {"result", "data", "temp", "val", "value", "item", "items", "output", "res", "arr", "lst"}
+        # AI-generated code characteristics
+        textbook_names = {"result", "data", "temp", "val", "value", "item", "items", "output", "res", "arr", "lst", "response", "element"}
         textbook_count = sum(1 for name in identifiers if name.lower() in textbook_names)
         textbook_ratio = textbook_count / max(1, len(identifiers))
 
-        # Heuristic scoring calibrated with common LLM code output
         ai_score_raw = 30.0
         if textbook_ratio > 0.35:
             ai_score_raw += 30.0
@@ -85,16 +150,14 @@ class CodeAstAnalyzer:
         if 3 <= max_depth <= 6 and branches <= 5:
             ai_score_raw += 15.0
         elif max_depth > 9:
-            ai_score_raw -= 20.0  # Deep nested logic is typical of messy human code
+            ai_score_raw -= 20.0
 
         if comment_density > 25.0:
-            # Overly pedagogical step-by-step comments are an LLM hallmark
             ai_score_raw += 20.0
         elif comment_density == 0.0 and loc_count > 15:
             ai_score_raw -= 10.0
 
         overall_ai_score = max(5.0, min(95.0, round(ai_score_raw, 1)))
-
         _, verdict_label, _ = score_to_color_and_verdict(overall_ai_score / 100.0)
 
         # Construct line-by-line spans for Monaco code editor
@@ -103,9 +166,8 @@ class CodeAstAnalyzer:
             stripped = line.strip()
             line_score = overall_ai_score / 100.0
 
-            # Differentiate line classification:
-            # 1. Textbook AI boilerplate: formulaic comments, generic variable names
-            if stripped.startswith("#"):
+            # Differentiate line classification
+            if stripped.startswith("#") or stripped.startswith("//"):
                 lower_c = stripped.lower()
                 if any(w in lower_c for w in ["step", "initialize", "helper", "calculate", "function to", "loop through", "create", "return the"]):
                     line_score = min(0.92, max(0.75, line_score + 0.25))
@@ -113,11 +175,14 @@ class CodeAstAnalyzer:
                     line_score = max(0.12, min(0.30, line_score - 0.35))
                 else:
                     line_score = min(0.85, line_score + 0.15)
-            elif any(stripped.startswith(k) for k in ["result =", "data =", "total =", "output =", "res =", "temp =", "val ="]):
+            elif any(stripped.startswith(k) for k in [
+                "result =", "data =", "total =", "output =", "res =", "temp =", "val =",
+                "const result", "let result", "const data", "let total", "var temp"
+            ]):
                 line_score = min(0.88, max(0.72, line_score + 0.20))
-            elif any(k in stripped for k in ["_hack", "fix_", "dbg_", "crazy", "weird", "lambda", "assert "]):
-                line_score = max(0.15, line_score - 0.30)
-            elif any(k in stripped for k in ["def ", "class ", "return "]):
+            elif any(k in stripped for k in ["_hack", "fix_", "dbg_", "crazy", "weird", "lambda", "assert ", "console.log", "print("]):
+                line_score = max(0.15, line_score - 0.28)
+            elif any(k in stripped for k in ["def ", "class ", "function ", "return ", "export "]):
                 line_score = max(0.38, min(0.62, line_score))
 
             line_score = max(0.05, min(0.95, line_score))

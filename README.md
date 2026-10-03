@@ -1,50 +1,44 @@
----
-title: DeepScan Veritas AI
-emoji: 🛡️
-colorFrom: cyan
-colorTo: blue
-sdk: docker
-app_port: 7860
-pinned: false
-license: mit
----
-
 # Veritas AI — DeepScan Forensic
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Frontend: React Vite](https://img.shields.io/badge/Frontend-React%20%7C%20Vite%20%7C%20Monaco-06B6D4?logo=react&logoColor=white)](https://vitejs.dev/)
+[![Frontend: React & Monaco](https://img.shields.io/badge/Frontend-React%2019%20%7C%20Vite%20%7C%20Monaco-06B6D4?logo=react&logoColor=white)](https://vitejs.dev/)
 [![Backend: FastAPI](https://img.shields.io/badge/Backend-FastAPI%20%7C%20Python%203.11-10B981?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Database: SQLAlchemy](https://img.shields.io/badge/Database-SQLite%20%7C%20Neon%20Postgres-336791?logo=postgresql&logoColor=white)](https://neon.tech/)
-[![Deployment: $0 Free Tier](https://img.shields.io/badge/Deployment-%240%2Fmo%20Free%20Tier-22C55E)](https://huggingface.co/spaces)
+[![Deployment: Vercel](https://img.shields.io/badge/Deployment-Vercel%20Serverless%20%7C%20%240%20Tier-black?logo=vercel&logoColor=white)](https://deepscan-veritas-ai.vercel.app/)
+[![Database: SQLAlchemy](https://img.shields.io/badge/Database-SQLite%20%7C%20PostgreSQL-336791?logo=postgresql&logoColor=white)](https://www.sqlalchemy.org/)
+[![Engine: Multi-Language AST & Perplexity](https://img.shields.io/badge/Engine-Perplexity%20%7C%20Multi--Language%20AST-8B5CF6)](https://github.com/AnshulKanodia/DeepScan-Veritas-AI)
 
 ---
 
-## Description
+## Small Description
 
-**Veritas AI (DeepScan Forensic)** is a lightweight, dual-engine forensic detector engineered to identify AI-generated prose and synthetic source code locally without relying on expensive, opaque third-party APIs. By calculating token-level log-probabilities, sentence-by-sentence linguistic perplexity, structural burstiness (Fano factor), and Abstract Syntax Tree (AST) identifier entropy, Veritas AI explains its findings with an interactive sentence-level Monaco heatmap, a detailed metrics dashboard, and cryptographic SHA-256 stamped PDF reports.
+**Veritas AI (DeepScan Forensic)** is a high-assurance, dual-modality authenticity engine engineered to detect AI-generated prose, humanized paraphrasing, and synthetic source code without relying on expensive, black-box third-party APIs. By fusing n-gram linguistic perplexity ($PPL$), structural burstiness (Fano factor), anti-humanizer paraphrase signatures, multi-language Abstract Syntax Tree (AST) analysis, and Shannon entropy, Veritas AI explains its findings through an interactive sentence-level Monaco heatmap, deep statistical telemetry, and verifiable cryptographic SHA-256 PDF audit certificates—all deployable on a $0 free tier budget.
 
 ---
 
 ## Features
 
-- **Dual-Mode Forensic Analysis:**
-  - **Natural Language Engine:** Evaluates linguistic perplexity ($PPL$), structural burstiness ($\sigma^2/\mu$), and Top-$K$ (Top-10, Top-100) token distributions.
-  - **Source Code (AST) Engine:** Parses Python Abstract Syntax Trees to measure nesting depth, control flow branches (cyclomatic complexity), comment density, and identifier Shannon entropy.
-- **Interactive Sentence-Level Visual Heatmap:**
-  - Integrated **Microsoft Monaco Editor** that paints dynamic inline background highlights using `deltaDecorations`:
-    - 🟩 **Emerald Green:** Likely Human-Authored ($PPL > 45$, high burstiness)
-    - 🟨 **Amber Topaz:** Mixed / Heavily Refined
-    - 🟥 **Crimson Red:** Likely AI-Generated ($PPL < 25$, uniform tempo)
-- **Granular Sentence-by-Sentence Breakdown:**
-  - Interactive table beneath the editor providing exact Perplexity scores, AI likelihood percentages, and bidirectional click-to-highlight synchronization.
-- **Real-Time Deep Statistical Dashboard:**
-  - Circular radial gauge for global AI confidence.
-  - Individual metric cards for Mean PPL, Minimum PPL, Burstiness Index, AST Depth, and Identifier Entropy.
-- **Audit Logging & History Explorer:**
-  - Automatic persistence to SQLAlchemy (SQLite locally, or Serverless PostgreSQL on Neon.tech/Supabase in production).
-  - Built-in **Audit Logs** modal to inspect past scans, timestamps, and verdicts.
-- **Verifiable In-Memory PDF Forensic Export:**
-  - Streams verifiable, SHA-256 cryptographically stamped PDF audit reports on demand with **$0 cloud storage costs**.
+- **Dual-Modality Forensic Architecture**:
+  - **Natural Language Engine:** Evaluates sentence-by-sentence linguistic perplexity ($PPL$), structural burstiness ($\sigma^2/\mu$), and Top-$K$ (Top-10, Top-100) token distributions.
+  - **Anti-Humanizer & Paraphraser Detection:** Identifies evasion signatures produced by AI humanizing tools (e.g., QuillBot, StealthGPT, Undetectable AI) via synonym substitution entropy and structural variance smoothing.
+  - **Multi-Language Source Code (AST) Engine:** Structural analysis across **Python, JavaScript, TypeScript, Java, C++, and Go**; measures AST nesting depth, cyclomatic branching complexity, comment density, and identifier Shannon entropy.
+- **Interactive Monaco Editor Visual Heatmap**:
+  - Integrated **Microsoft Monaco Editor** with dynamic sentence-level `deltaDecorations` and automatic highlight reset upon typing:
+    - 🟩 **Likely Human (<35% AI Prob):** High structural perplexity and organic burstiness.
+    - 🟨 **Mixed / Refined (35–70% AI Prob):** Hybrid editing, translation, or AI-assisted composition.
+    - 🟥 **Likely AI (>70% AI Prob):** Low perplexity uniformity characteristic of large language models.
+- **Universal Document Extraction & Web Ingestion**:
+  - Native file upload and drag-and-drop support for **PDF** (`.pdf`), **Word** (`.docx`), plain text (`.txt`), and source code files.
+  - Built-in **Web & GitHub URL Scanner** to extract and inspect live online articles and repositories.
+- **Granular Segment Breakdown**:
+  - Sentence-by-sentence and line-by-line inspection table with bidirectional click-to-highlight synchronization, sorting, and individual confidence ratings.
+- **Deep Statistical Telemetry Dashboard**:
+  - High-precision radial SVG gauge displaying global AI probability.
+  - Granular telemetry cards for Mean PPL, Minimum PPL, Burstiness Index, AST Depth, and Information Entropy.
+  - Active segment inspector displaying raw excerpt and perplexity metrics.
+- **Cryptographic Audit Logs & In-Memory PDF Export**:
+  - Persistent scan history with audit records stored via SQLAlchemy (SQLite locally or serverless PostgreSQL in production).
+  - Built-in audit log modal to explore historical scans, timestamps, and classifications.
+  - Verifiable, cryptographically stamped (SHA-256) PDF audit certificates streamed in-memory via ReportLab with **$0 cloud storage overhead**.
 
 ---
 
@@ -58,25 +52,24 @@ DeepScan/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── endpoints.py       # REST API endpoints (/analyze, /history, /export)
+│   │   │   ├── endpoints.py       # REST endpoints (/analyze, /extract-file, /url, /history, /export/pdf)
 │   │   │   └── schemas.py         # Pydantic request/response data contracts
-│   │   ├── core/
 │   │   ├── db/
-│   │   │   ├── database.py        # SQLAlchemy session & multi-database engine
+│   │   │   ├── database.py        # SQLAlchemy session & database engine
 │   │   │   └── models.py          # ScanRecord database entity
 │   │   ├── ml/
-│   │   │   ├── ast_analyzer.py    # Python AST & identifier entropy extractor
-│   │   │   ├── features.py        # Mathematical formulas (PPL, Burstiness, Fano)
-│   │   │   └── text_analyzer.py   # Token probability & perplexity calculator
+│   │   │   ├── ast_analyzer.py    # Multi-language AST parser & identifier entropy calculator
+│   │   │   ├── features.py        # Mathematical formulas (PPL, Burstiness, Fano factor)
+│   │   │   └── text_analyzer.py   # Perplexity, burstiness & humanizer detection engine
 │   │   ├── services/
 │   │   │   └── pdf_report.py      # In-memory ReportLab PDF generator
-│   │   └── main.py                # FastAPI app entrypoint (Port 7860 + CORS)
+│   │   └── main.py                # FastAPI entrypoint (Port 7860 + CORS)
 │   ├── models/
 │   │   └── feature_metadata.json  # Calibrated model feature configurations
 │   ├── tests/
 │   │   └── test_api.py            # Pytest test suite (100% endpoint coverage)
-│   ├── Dockerfile                 # Multi-stage production container (HF Spaces)
-│   └── requirements.txt           # Python dependencies
+│   ├── Dockerfile                 # Multi-stage production container
+│   └── requirements.txt           # Python dependencies (FastAPI, pypdf, reportlab, uvicorn)
 ├── data_engine/
 │   └── train_classifier.py        # Offline feature extraction & training pipeline
 ├── frontend/
@@ -86,9 +79,8 @@ DeepScan/
 │   │   │   ├── ForensicMetrics.jsx   # Statistical dashboard & radial AI gauge
 │   │   │   ├── MonacoHeatmap.jsx     # Monaco Editor with dynamic decorations
 │   │   │   ├── ScanHistoryModal.jsx  # Database audit history dialog
-│   │   │   └── SentenceTable.jsx     # Sentence breakdown & sorting table
-│   │   ├── data/
-│   │   │   └── samples.js            # Preset essays and source code snippets
+│   │   │   ├── SentenceTable.jsx     # Sentence breakdown & sorting table
+│   │   │   └── UrlScanModal.jsx      # Web & GitHub URL ingestion dialog
 │   │   ├── services/
 │   │   │   └── api.js                # Frontend REST client & PDF downloader
 │   │   ├── App.jsx                   # Master forensic workspace application
@@ -96,13 +88,14 @@ DeepScan/
 │   │   └── main.jsx
 │   ├── index.html                 # SEO tags, Inter & JetBrains Mono typography
 │   ├── package.json
-│   ├── vercel.json                # Vercel SPA routing rewrite configuration
 │   └── vite.config.js
-├── .gitignore                     # Comprehensive git ignore for Python & Node
+├── .gitignore                     # Git ignore rules for Python, Node, & caches
 ├── deepscan_project_report.md     # Initial project specification
 ├── IMPLEMENTATION_PLAN.md         # Phased roadmap & architecture blueprint
 ├── LICENSE                        # MIT License
-└── README.md                      # Documentation & deployment guide
+├── README.md                      # Documentation & deployment guide
+├── TEST_SAMPLES.txt               # Verification sample dataset (AI, Human, Mixed, Code)
+└── vercel.json                    # Unified multi-service routing configuration
 ```
 
 ---
@@ -121,13 +114,13 @@ DeepScan/
 #### Backend Setup
 ```bash
 # Clone the repository
-git clone https://github.com/AnshulKanodia/DeepScan.git
-cd DeepScan
+git clone https://github.com/AnshulKanodia/DeepScan-Veritas-AI.git
+cd DeepScan-Veritas-AI
 
 # Install Python backend dependencies
 pip install -r backend/requirements.txt
 
-# Start FastAPI backend (listens on default port 7860)
+# Start FastAPI backend (runs on port 7860)
 python backend/app/main.py
 ```
 - API Health Check: `http://localhost:7860/health`
@@ -135,7 +128,7 @@ python backend/app/main.py
 
 #### Frontend Setup
 ```bash
-# In a new terminal, navigate to frontend directory
+# In a new terminal, navigate to the frontend directory
 cd frontend
 
 # Install dependencies
@@ -153,7 +146,9 @@ pytest backend/tests/test_api.py -v
 
 ---
 
-### 3. $0 Budget Cloud Deployment
+### 3. Setup & Cloud Deployment ($0 Budget)
+
+Veritas AI is designed to run seamlessly on modern zero-cost cloud tiers.
 
 ```
                   +-----------------------------------+
@@ -165,47 +160,43 @@ pytest backend/tests/test_api.py -v
                                     |
                                     v
                   +-----------------------------------+
-                  |    Hugging Face Spaces ($0)       |
-                  |  FastAPI + ONNX Runtime (Docker)  |
-                  |     (2 vCPU / 16 GB RAM Free)     |
+                  |      Vercel / HF Spaces ($0)      |
+                  |  FastAPI + In-Memory Python Engine|
                   +-----------------+-----------------+
                                     |
                   +-----------------+-----------------+
                   |                                   |
                   v                                   v
        +--------------------+               +-------------------+
-       |  Neon.tech ($0)    |               | In-Memory Stream  |
-       |  Serverless Postgres|              | Direct PDF Export |
+       | SQLite / Postgres  |               | In-Memory Stream  |
+       |  Audit Log DB ($0) |               | Direct PDF Export |
        +--------------------+               +-------------------+
 ```
 
-#### Step A: Deploy Backend to Hugging Face Spaces ($0/mo)
+#### Option A: Unified Vercel Serverless Deployment ($0/mo, Recommended)
+1. Fork or push this repository to GitHub.
+2. Go to [Vercel](https://vercel.com) and click **Add New Project**.
+3. Import the `DeepScan-Veritas-AI` repository.
+4. Keep the root directory as `./` (Vercel automatically detects [`vercel.json`](vercel.json) to build the FastAPI backend and React frontend simultaneously).
+5. Click **Deploy**. Vercel will deploy both the API and the web frontend to a global edge network.
+
+#### Option B: Hugging Face Spaces (Docker Container, $0/mo)
 1. Navigate to [Hugging Face Spaces](https://huggingface.co/spaces) and click **Create new Space**.
-2. Name your space (e.g., `veritas-ai-api`), select license **MIT**, and choose **Docker** (Blank).
-3. Connect your GitHub repository (`AnshulKanodia/DeepScan`) or push the contents of `backend/`.
-4. Hugging Face Spaces will automatically build using [backend/Dockerfile](backend/Dockerfile) and expose port `7860` with **16 GB RAM completely free**.
+2. Select **Docker** (Blank) and set your license to **MIT**.
+3. Connect your GitHub repository (`AnshulKanodia/DeepScan-Veritas-AI`).
+4. Hugging Face Spaces will build the application using [`backend/Dockerfile`](backend/Dockerfile) and expose port `7860` with **16 GB RAM completely free**.
 
-#### Step B: Deploy Frontend to Vercel ($0/mo)
-1. Go to [Vercel](https://vercel.com) and click **Add New Project**.
-2. Import the `AnshulKanodia/DeepScan` repository.
-3. Configure project settings:
-   - **Root Directory:** `frontend`
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-4. Add Environment Variable:
-   - `VITE_API_URL`: `https://<your-hf-username>-veritas-ai-api.hf.space`
-5. Click **Deploy**. Vercel will build and deploy your app to a global edge CDN.
-
-#### Step C: Connect Neon.tech Serverless Postgres ($0/mo, Optional)
-1. Create a free project on [Neon.tech](https://neon.tech).
-2. Copy your PostgreSQL connection string.
-3. In Hugging Face Spaces, navigate to **Settings > Variables and secrets** and add:
-   - `DATABASE_URL`: `postgresql://<user>:<password>@<host>/<dbname>?sslmode=require`
-4. Veritas AI will automatically connect and create audit history tables on boot.
+#### Option C: Serverless PostgreSQL (Optional)
+To persist audit logs across serverless instances:
+1. Create a free PostgreSQL instance on [Neon.tech](https://neon.tech) or [Supabase](https://supabase.com).
+2. Set the `DATABASE_URL` environment variable in your deployment dashboard:
+   ```env
+   DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+   ```
+3. Veritas AI will automatically connect and create audit history tables on boot.
 
 ---
 
 ## License
 
-This project is licensed under the terms of the [MIT License](LICENSE).
+This project is open-source and licensed under the terms of the [MIT License](LICENSE).

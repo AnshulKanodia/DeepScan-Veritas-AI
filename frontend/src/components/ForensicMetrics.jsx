@@ -103,6 +103,40 @@ export default function ForensicMetrics({ metrics, selectedSegment, mode }) {
               <div className="metric-value">{metrics.min_perplexity}</div>
               <div className="metric-sub">Lowest sentence surprise</div>
             </div>
+
+            {/* AI Humanizer / Paraphrase Bypass Detector */}
+            <div className="metric-card" style={{
+              gridColumn: 'span 2',
+              borderColor: (metrics.humanizer_score || 0) >= 60 ? 'rgba(239, 68, 68, 0.4)' : (metrics.humanizer_score || 0) >= 35 ? 'rgba(245, 158, 11, 0.4)' : '#1E293B',
+              backgroundColor: (metrics.humanizer_score || 0) >= 60 ? 'rgba(239, 68, 68, 0.08)' : '#0F172A'
+            }}>
+              <div className="metric-card-header" style={{ justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <ShieldCheck size={14} color={(metrics.humanizer_score || 0) >= 60 ? '#EF4444' : '#10B981'} />
+                  <span>AI Humanizer / Paraphrase Risk</span>
+                </div>
+                <span style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  padding: '2px 6px',
+                  borderRadius: 4,
+                  backgroundColor: (metrics.humanizer_score || 0) >= 60 ? 'rgba(239, 68, 68, 0.2)' : (metrics.humanizer_score || 0) >= 35 ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                  color: (metrics.humanizer_score || 0) >= 60 ? '#F87171' : (metrics.humanizer_score || 0) >= 35 ? '#FBBF24' : '#34D399'
+                }}>
+                  {metrics.humanizer_verdict || 'None Detected'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
+                <span className="metric-value" style={{
+                  color: (metrics.humanizer_score || 0) >= 60 ? '#EF4444' : (metrics.humanizer_score || 0) >= 35 ? '#F59E0B' : '#10B981'
+                }}>
+                  {metrics.humanizer_score ?? 0}%
+                </span>
+                <span className="metric-sub" style={{ margin: 0 }}>
+                  QuillBot / StealthGPT substitution entropy
+                </span>
+              </div>
+            </div>
           </>
         ) : (
           <>

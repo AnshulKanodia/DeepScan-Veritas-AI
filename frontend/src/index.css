@@ -608,3 +608,65 @@ body {
   border-bottom: 2px solid rgba(16, 185, 129, 0.9) !important;
   border-radius: 2px;
 }
+
+/* Enhanced Toolbar & Drag Drop Utilities */
+.btn-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #0F172A;
+  border: 1px solid #1E293B;
+  color: #94A3B8;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-tool:hover {
+  background-color: #1E293B;
+  color: #F8FAFC;
+  border-color: #334155;
+}
+
+.select-lang {
+  background-color: #0F172A;
+  border: 1px solid #1E293B;
+  color: #06B6D4;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+}
+
+.select-lang:focus {
+  border-color: #06B6D4;
+}
+
+.drag-drop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 17, 23, 0.88);
+  backdrop-filter: blur(4px);
+  border: 2px dashed #06B6D4;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  pointer-events: none;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

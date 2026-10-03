@@ -80,3 +80,29 @@ export async function downloadForensicPdf(reportPayload) {
   window.URL.revokeObjectURL(url);
   document.body.removeChild(a);
 }
+
+export async function analyzeUrl(url) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/analyze/url`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  });
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.detail || 'Failed to fetch and analyze URL');
+  }
+  return await response.json();
+}
+
+export async function extractFile(filename, raw_text = null, content_base64 = null) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/extract-file`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ filename, raw_text, content_base64 }),
+  });
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.detail || 'Failed to parse file');
+  }
+  return await response.json();
+}

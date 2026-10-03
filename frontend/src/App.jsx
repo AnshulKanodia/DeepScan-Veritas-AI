@@ -12,7 +12,7 @@ import UrlScanModal from './components/UrlScanModal';
 import ApiModal from './components/ApiModal';
 import {
   analyzeText, analyzeCode, downloadForensicPdf,
-  checkBackendHealth, getScanHistory
+  checkBackendHealth, getScanHistory, extractFile
 } from './services/api';
 
 export default function App() {

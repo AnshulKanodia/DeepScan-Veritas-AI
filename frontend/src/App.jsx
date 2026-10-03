@@ -41,6 +41,15 @@ export default function App() {
     setContent('');
   };
 
+  const handleContentChange = (newVal) => {
+    setContent(newVal || '');
+    // Immediately clear previous analysis and highlight decorations when user modifies content
+    if (analysisResult) {
+      setAnalysisResult(null);
+      setSelectedSegment(null);
+    }
+  };
+
   const handleRunAnalysis = async () => {
     if (!content.trim()) return;
     setLoading(true);
@@ -299,7 +308,7 @@ export default function App() {
             {editorType === 'monaco' ? (
               <MonacoHeatmap
                 value={content}
-                onChange={(val) => setContent(val || '')}
+                onChange={handleContentChange}
                 language={mode === 'text' ? 'markdown' : 'python'}
                 sentences={analysisResult?.sentences || []}
                 lines={analysisResult?.lines || []}
@@ -309,7 +318,7 @@ export default function App() {
             ) : (
               <textarea
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => handleContentChange(e.target.value)}
                 placeholder="Type or paste your text or source code here to analyze..."
                 style={{
                   width: '100%',

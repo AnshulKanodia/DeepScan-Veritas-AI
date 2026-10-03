@@ -38,6 +38,13 @@ export default function MonacoHeatmap({
       }
     });
 
+    // Listen to content edits: immediately clear decorations when user types or modifies text
+    editor.onDidChangeModelContent(() => {
+      if (decorationsRef.current.length > 0) {
+        decorationsRef.current = editor.deltaDecorations(decorationsRef.current, []);
+      }
+    });
+
     applyDecorations();
   };
 
@@ -47,6 +54,15 @@ export default function MonacoHeatmap({
     const monaco = monacoRef.current;
     const model = editor.getModel();
     if (!model) return;
+
+    // If no analysis is active, clear all decorations immediately
+    if (
+      (mode === 'text' && (!sentences || sentences.length === 0)) ||
+      (mode === 'code' && (!lines || lines.length === 0))
+    ) {
+      decorationsRef.current = editor.deltaDecorations(decorationsRef.current, []);
+      return;
+    }
 
     const newDecorations = [];
 
@@ -72,6 +88,7 @@ export default function MonacoHeatmap({
           options: {
             isWholeLine: false,
             inlineClassName: className,
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
             hoverMessage: {
               value: `**Forensic Verdict:** ${s.classification.replace('_', ' ').toUpperCase()}\n\n• **P(AI):** ${s.ai_probability}%\n• **Perplexity:** ${s.perplexity}`,
             },
@@ -92,6 +109,7 @@ export default function MonacoHeatmap({
           options: {
             isWholeLine: true,
             className: className,
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
             hoverMessage: {
               value: `**Line AI Confidence:** ${l.ai_probability}%\nVerdict: ${l.classification.replace('_', ' ').toUpperCase()}`,
             },

@@ -1,4 +1,5 @@
 import os
+os.environ["DISABLE_SQLALCHEMY_CEXT"] = "1"
 import tempfile
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker

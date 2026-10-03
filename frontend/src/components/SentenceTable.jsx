@@ -33,8 +33,8 @@ export default function SentenceTable({ sentences = [], lines = [], mode = 'text
         </span>
       </div>
 
-      <div style={{ maxHeight: '180px', overflowY: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+      <div style={{ maxHeight: '190px', overflowY: 'auto', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <table style={{ width: '100%', minWidth: '440px', borderCollapse: 'collapse', fontSize: 11 }}>
           <thead>
             <tr style={{ borderBottom: '1px solid #1E293B', color: '#64748B', textAlign: 'left' }}>
               <th style={{ padding: '8px 12px', width: '40px' }}>#</th>

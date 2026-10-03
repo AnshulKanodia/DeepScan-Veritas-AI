@@ -19,8 +19,9 @@ export default function ScanHistoryModal({ isOpen, onClose, history = [], onSele
       zIndex: 100,
     }}>
       <div style={{
-        width: '600px',
-        maxHeight: '80vh',
+        width: '92%',
+        maxWidth: '600px',
+        maxHeight: '85vh',
         backgroundColor: '#0D121F',
         border: '1px solid #1E293B',
         borderRadius: '16px',

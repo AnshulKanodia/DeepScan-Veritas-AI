@@ -102,13 +102,25 @@ class CodeAstAnalyzer:
         for idx, line in enumerate(lines, start=1):
             stripped = line.strip()
             line_score = overall_ai_score / 100.0
-            
-            # Nuance line scoring based on comments or generic assignments
-            if stripped.startswith("#"):
-                line_score = min(0.95, line_score + 0.15)
-            elif any(k in stripped for k in ["def ", "class "]):
-                line_score = max(0.10, line_score - 0.10)
 
+            # Differentiate line classification:
+            # 1. Textbook AI boilerplate: formulaic comments, generic variable names
+            if stripped.startswith("#"):
+                lower_c = stripped.lower()
+                if any(w in lower_c for w in ["step", "initialize", "helper", "calculate", "function to", "loop through", "create", "return the"]):
+                    line_score = min(0.92, max(0.75, line_score + 0.25))
+                elif any(w in lower_c for w in ["hack", "todo", "fixme", "workaround", "ugly", "debug", "wip", "legacy"]):
+                    line_score = max(0.12, min(0.30, line_score - 0.35))
+                else:
+                    line_score = min(0.85, line_score + 0.15)
+            elif any(stripped.startswith(k) for k in ["result =", "data =", "total =", "output =", "res =", "temp =", "val ="]):
+                line_score = min(0.88, max(0.72, line_score + 0.20))
+            elif any(k in stripped for k in ["_hack", "fix_", "dbg_", "crazy", "weird", "lambda", "assert "]):
+                line_score = max(0.15, line_score - 0.30)
+            elif any(k in stripped for k in ["def ", "class ", "return "]):
+                line_score = max(0.38, min(0.62, line_score))
+
+            line_score = max(0.05, min(0.95, line_score))
             verdict_type, _, color = score_to_color_and_verdict(line_score)
             line_spans.append(CodeLineSpan(
                 line_number=idx,

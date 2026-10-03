@@ -1,0 +1,95 @@
+================================================================================
+VERITAS AI / DEEPSCAN FORENSIC ENGINE - TEST SAMPLES FOR VISUAL HEATMAPS
+================================================================================
+
+Below are ready-to-use test samples categorized to demonstrate:
+  • RED   = Likely AI-Generated  (P(AI) >= 70% | Low Perplexity / Formulaic Boilerplate)
+  • AMBER = Mixed / Refined      (P(AI) 36% - 69% | Moderate Perplexity / Balanced)
+  • GREEN = Likely Human-Written (P(AI) <= 35% | High Perplexity / Irregularity / Burstiness)
+
+Copy and paste each sample directly into the Veritas AI editor at:
+https://deepscan-veritas-ai.vercel.app/
+
+--------------------------------------------------------------------------------
+SAMPLE 1: PURE AI-GENERATED TEXT (Shows RED Highlights)
+--------------------------------------------------------------------------------
+[Expected Result: RED / High AI Probability > 85%, Low Perplexity < 20]
+
+Artificial intelligence plays a pivotal role in the modern technological landscape. Furthermore, it is crucial to note that machine learning algorithms delve into the rich tapestry of digital transformation. Additionally, natural language processing models exhibit seamless capabilities across automated discourse. In conclusion, these revolutionary developments foster a profound paradigm shift that underscores the paramount importance of neural architectures in shaping future innovation.
+
+
+--------------------------------------------------------------------------------
+SAMPLE 2: MIXED / REFINED TEXT (Shows AMBER Highlights)
+--------------------------------------------------------------------------------
+[Expected Result: AMBER / Mixed Confidence ~45% - 65%, Perplexity ~28 - 38]
+
+The team deployed the new microservice architecture to production on Tuesday afternoon. System telemetry showed steady CPU utilization across all four container pods. Several database queries required index tuning to avoid thread contention during peak traffic hours. The release notes were distributed to stakeholders following the standard staging verification checklist.
+
+
+--------------------------------------------------------------------------------
+SAMPLE 3: PURE HUMAN-WRITTEN TEXT (Shows GREEN Highlights)
+--------------------------------------------------------------------------------
+[Expected Result: GREEN / High Perplexity > 55, AI Probability < 20%]
+
+I honestly don't think this thing works the way they told us it would, haha! We spent like five hours debugging this weird memory leak yesterday—turns out someone forgot to close an open socket in the legacy loop. Crazy stuff, but anyway, I'm grabbing coffee now and we'll fix the rest of the mess later.
+
+
+--------------------------------------------------------------------------------
+SAMPLE 4: HYBRID MULTI-PARAGRAPH ESSAY (Shows RED, AMBER & GREEN in One Scan!)
+--------------------------------------------------------------------------------
+[Expected Result: Multi-colored Heatmap with Red, Amber, and Green sentences!]
+
+Furthermore, it is important to remember that artificial intelligence continues to revolutionize modern society by delivering seamless solutions across diverse industries.
+
+The neural network computes high dimensional projections across sequential hidden layers during the backward propagation pass.
+
+I really couldn't care less about the buzzwords, honestly—most of our production outages came from rushed PRs and messy database migrations that nobody bothered to test!
+
+In conclusion, delving into this multifaceted domain serves as a testament to the ever-evolving nature of computational intelligence.
+
+
+--------------------------------------------------------------------------------
+SAMPLE 5: AI-GENERATED PYTHON CODE (Shows RED & AMBER Line Highlights)
+--------------------------------------------------------------------------------
+[Expected Result: RED for formulaic comments & generic assignments; AMBER for declarations]
+
+# Step 1: Helper function to calculate total sum of elements
+def calculate_sum(data):
+    # Initialize result accumulator
+    result = 0
+    total = 0
+    # Loop through each item in the input list
+    for item in data:
+        result = result + item
+    return result
+
+
+--------------------------------------------------------------------------------
+SAMPLE 6: HUMAN / MESSY PYTHON CODE (Shows GREEN Line Highlights)
+--------------------------------------------------------------------------------
+[Expected Result: GREEN / High entropy, domain variable names, informal debug logic]
+
+def parse_p2p_socket(raw_buf):
+    # FIXME: ugly hack because legacy payload has 3-byte offset
+    dbg_offset = [x for x in raw_buf if x != 0x00]
+    weird_counter_xyz = len(dbg_offset)
+    # TODO: rewrite this crazy workaround next sprint
+    assert weird_counter_xyz > 0, "socket buffer corrupted"
+    return dbg_offset
+
+
+--------------------------------------------------------------------------------
+SAMPLE 7: HYBRID PYTHON SCRIPT (Shows RED, AMBER & GREEN in One Code Scan!)
+--------------------------------------------------------------------------------
+[Expected Result: Monaco Code Editor highlighting RED for AI lines, AMBER for def/return, and GREEN for human debug lines!]
+
+# Step 1: Function to calculate total sum
+def calculate_sum(data):
+    result = 0
+    # FIXME: ugly hack because legacy API sends string numbers
+    dbg_val = [int(x) for x in data if x != '']
+    for val in dbg_val:
+        result += val
+    return result
+
+================================================================================

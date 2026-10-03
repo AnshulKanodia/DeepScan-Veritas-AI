@@ -11,11 +11,9 @@ import {
   analyzeText, analyzeCode, downloadForensicPdf,
   checkBackendHealth, getScanHistory
 } from './services/api';
-import { SAMPLE_TEXTS, SAMPLE_CODES } from './data/samples';
-
 export default function App() {
   const [mode, setMode] = useState('text'); // 'text' | 'code'
-  const [content, setContent] = useState(SAMPLE_TEXTS.aiEssay);
+  const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
@@ -40,11 +38,7 @@ export default function App() {
     setAnalysisResult(null);
     setSelectedSegment(null);
     setErrorMsg(null);
-    if (newMode === 'text') {
-      setContent(SAMPLE_TEXTS.aiEssay);
-    } else {
-      setContent(SAMPLE_CODES.aiCode);
-    }
+    setContent('');
   };
 
   const handleRunAnalysis = async () => {
@@ -177,61 +171,11 @@ export default function App() {
         </div>
       </header>
 
-      {/* Preset Toolbar & Action Bar */}
+      {/* Action Toolbar & Legend */}
       <div className="toolbar-bar">
-        <div className="presets-group">
-          <span style={{ color: '#64748B', display: 'flex', alignItems: 'center', gap: 4, marginRight: 4 }}>
-            <Sparkles size={12} color="#06B6D4" /> Sample Presets:
-          </span>
-          {mode === 'text' ? (
-            <>
-              <button
-                id="btn-sample-ai-text"
-                onClick={() => {
-                  setContent(SAMPLE_TEXTS.aiEssay);
-                  setAnalysisResult(null);
-                }}
-                className="preset-btn"
-              >
-                ChatGPT Essay
-              </button>
-              <button
-                id="btn-sample-human-text"
-                onClick={() => {
-                  setContent(SAMPLE_TEXTS.humanEssay);
-                  setAnalysisResult(null);
-                }}
-                className="preset-btn"
-              >
-                Human Essay
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                id="btn-sample-ai-code"
-                onClick={() => {
-                  setContent(SAMPLE_CODES.aiCode);
-                  setAnalysisResult(null);
-                }}
-                className="preset-btn"
-              >
-                AI Python Code
-              </button>
-              <button
-                id="btn-sample-human-code"
-                onClick={() => {
-                  setContent(SAMPLE_CODES.humanCode);
-                  setAnalysisResult(null);
-                }}
-                className="preset-btn"
-              >
-                Human Python Code
-              </button>
-            </>
-          )}
-
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
+            id="btn-clear-content"
             onClick={() => {
               setContent('');
               setAnalysisResult(null);
@@ -239,23 +183,28 @@ export default function App() {
             }}
             className="clear-btn"
           >
-            Clear
+            Clear Editor
           </button>
+          <span style={{ fontSize: '0.8rem', color: '#64748B', fontFamily: 'monospace' }}>
+            {mode === 'text'
+              ? `${content.trim() ? content.trim().split(/\s+/).length : 0} words`
+              : `${content ? content.split('\n').length : 0} lines`}
+          </span>
         </div>
 
         {/* Legend */}
         <div className="legend-group">
           <div className="legend-item">
             <span className="legend-box human" />
-            <span>Likely Human (PPL &gt; 45)</span>
+            <span>Likely Human (Green)</span>
           </div>
           <div className="legend-item">
             <span className="legend-box mixed" />
-            <span>Mixed / Edited</span>
+            <span>Mixed / Refined (Amber)</span>
           </div>
           <div className="legend-item">
             <span className="legend-box ai" />
-            <span>Likely AI (PPL &lt; 25)</span>
+            <span>Likely AI (Red)</span>
           </div>
         </div>
 

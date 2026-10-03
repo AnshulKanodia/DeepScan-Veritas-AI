@@ -122,6 +122,26 @@ export default function MonacoHeatmap({
         flexDirection: 'column',
       }}
     >
+      {!value && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 17,
+            left: 56,
+            color: '#475569',
+            fontSize: 13,
+            fontFamily: "'JetBrains Mono', 'Fira Code', Menlo, monospace",
+            pointerEvents: 'none',
+            userSelect: 'none',
+            zIndex: 1,
+            fontStyle: 'italic',
+          }}
+        >
+          {mode === 'text'
+            ? 'Paste or type essay, prose, or article here to analyze linguistic authenticity...'
+            : 'Paste or type Python code here to analyze AST & identifier entropy...'}
+        </div>
+      )}
       <Editor
         height="100%"
         width="100%"
